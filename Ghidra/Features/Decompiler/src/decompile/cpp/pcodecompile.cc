@@ -621,8 +621,10 @@ vector<OpTpl *> *PcodeCompile::assignBitRange(VarnodeTpl *vn,uint4 bitoffset,uin
   uint4 smallsize = (numbits+7)/8; // Size of input (output of rhs)
   bool shiftneeded = (bitoffset != 0);
   bool zextneeded = true;
-  uintb mask = (uintb)2;
-  mask = ~(((mask<<(numbits-1))-1) << bitoffset);
+  uintb mask = 0;
+  const int4 masknumbits = sizeof(mask) * 8;
+  if (numbits - 1 < masknumbits && bitoffset < masknumbits)
+    mask = ~(((static_cast<uintb>(2) << (numbits - 1)) - 1) << bitoffset);
 
   if (vn->getSize().getType()==ConstTpl::real) {
     // If we know the size of the bitranged varnode, we can
@@ -726,9 +728,6 @@ ExprTree *PcodeCompile::createBitRange(SpecificSymbol *sym,uint4 bitoffset,uint4
     }
   }
 
-  uintb mask = (uintb)2;
-  mask = ((mask<<(numbits-1))-1);
-  
   if (truncneeded && ((bitoffset % 8)==0)) {
     truncshift = bitoffset/8;
     bitoffset = 0;
@@ -751,8 +750,13 @@ ExprTree *PcodeCompile::createBitRange(SpecificSymbol *sym,uint4 bitoffset,uint4
     appendOp(CPUI_INT_RIGHT,res,bitoffset,4);
   if (truncneeded)
     appendOp(CPUI_SUBPIECE,res,truncshift,4);
-  if (maskneeded)
-    appendOp(CPUI_INT_AND,res,mask,finalsize);
+  if (maskneeded) {
+    uintb mask = 0;
+    if (numbits - 1 < sizeof(mask) * 8)
+      mask = static_cast<uintb>(2) << (numbits - 1);
+    --mask;
+    appendOp(CPUI_INT_AND, res, mask, finalsize);
+  }
   force_size(res->outvn,ConstTpl(ConstTpl::real,finalsize),*res->ops);
   return res;
 }
