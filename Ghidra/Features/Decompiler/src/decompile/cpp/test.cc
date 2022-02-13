@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 #include "test.hh"
+
+#include <algorithm>
+
 #include "libdecomp.hh"
 
 vector<UnitTest *> UnitTest::tests;
@@ -21,7 +24,8 @@ vector<UnitTest *> UnitTest::tests;
 /// Run all the tests unless a non-empty set of names is passed in.
 /// In which case, only the named tests in the set are run.
 /// \param testNames is the set of names
-void UnitTest::run(set<string> &testNames)
+/// \return number of failed tests
+int UnitTest::run(set<string> &testNames)
 
 {
   int total = 0;
@@ -42,6 +46,7 @@ void UnitTest::run(set<string> &testNames)
   }
   std::cerr << "==============================" << std::endl;
   std::cerr << passed << "/" << total << " tests passed." << std::endl;
+  return total - passed;
 }
 
 /// Create list of the absolute path of all tests to be run
@@ -85,7 +90,7 @@ int main(int argc, char **argv) {
   set<string> dataTestNames;
   string dirname("../datatests");
   string sleighdirname("../../../../../../..");
-  if (argc > 0) {
+  while (argc > 0) {
     string command(argv[0]);
     if (command == "-path") {
       dirname = argv[1];
@@ -109,30 +114,47 @@ int main(int argc, char **argv) {
       argv += 1;
       argc -= 1;
     }
-  }
-  if (argc > 0) {
-    string command(argv[0]);
-    if (command == "unittests") {
+    else if (command == "unittests") {
       runUnitTests = true;
       runDataTests = false;	// Run only unit tests
       unitTestNames.insert(argv + 1,argv + argc);
+      break;
     }
     else if (command == "datatests") {
       runUnitTests = false;	// Run only data-tests
       runDataTests = true;
       dataTestNames.insert(argv + 1,argv + argc);
+      break;
     }
     else {
-      cout << "USAGE: ghidra_test [-path <datatestdir>] [[unittests|datatests] [testname1 testname2 ...]]" << endl;
+      cout << "USAGE: ghidra_test [-usesleighenv] [-sleighpath <sleighdir>] [-path <datatestdir>] [[unittests|datatests] [testname1 testname2 ...]]" << endl;
+      return -1;
     }
   }
   startDecompilerLibrary(sleighdirname.c_str());
-  if (runUnitTests)
-    UnitTest::run(unitTestNames);
+
+  // Keep track of failed tests as return code to indicate failures, clamped at
+  // max 255 value
+  int failedTests = 0;
+  if (runUnitTests) {
+    int errors = UnitTest::run(unitTestNames);
+    // Clamp at 255 max return code
+    failedTests = std::min(
+        failedTests +
+            (errors < 0 ? 255 : std::min(errors, 255)),
+        255);
+  }
   if (runDataTests) {
     vector<string> testFiles;
     gatherDataTests(dirname,dataTestNames,testFiles);
     cout << endl << endl;
-    FunctionTestCollection::runTestFiles(testFiles,cout);
+    int errors = FunctionTestCollection::runTestFiles(testFiles,cout);
+    // Clamp at 255 max return code
+    failedTests = std::min(
+        failedTests +
+          (errors < 0 ? 255 : std::min(errors, 255)),
+        255);
   }
+
+  return failedTests;
 }
