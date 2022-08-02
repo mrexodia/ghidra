@@ -631,7 +631,7 @@ uintb sign_extend(uintb in,int4 sizein,int4 sizeout)
 void sign_extend(intb &val,int4 bit)
 
 {
-  intb mask = 0;
+  uintb mask = 0;
   mask = (~mask)<<bit;
   if (((val>>bit)&1)!=0)
     val |= mask;
@@ -645,7 +645,7 @@ void sign_extend(intb &val,int4 bit)
 void zero_extend(intb &val,int4 bit)
 
 {
-  intb mask = 0;
+  uintb mask = 0;
   mask = (~mask)<<bit;
   mask <<= 1;
   val &= (~mask);

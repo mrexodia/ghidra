@@ -2468,8 +2468,12 @@ void ProtoModelMerged::restoreXml(const Element *el)
     foldIn(mymodel);
     modellist.push_back(mymodel);
   }
-  ((ParamListMerged *)input)->finalize();
-  ((ParamListMerged *)output)->finalize();
+  if (input->getType() == ParamList::p_merged) {
+    ((ParamListMerged *)input)->finalize();
+  }
+  if (output->getType() == ParamList::p_merged) {
+    ((ParamListMerged *)output)->finalize();
+  }
 }
 
 void ParameterBasic::setTypeLock(bool val)
