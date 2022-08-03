@@ -16,6 +16,8 @@
 #include "space.hh"
 #include "translate.hh"
 
+#include <climits>
+
 /// Calculate \e highest based on \e addressSize, and \e wordsize.
 /// This also calculates the default pointerLowerBound
 void AddrSpace::calcScaleMask(void)
@@ -260,7 +262,10 @@ uintb AddrSpace::read(const string &s,int4 &size) const
     }
   }
   catch(LowlevelError &err) {	// Name doesn't exist
-    offset = strtoul(s.c_str(),&tmpdata,0);
+    offset = strtoull(s.c_str(),&tmpdata,0);
+    if (offset == ULLONG_MAX) {
+      throw LowlevelError("Offset outside of valid range");
+    }
     offset = addressToByte(offset,wordsize);
     enddata = (const char *) tmpdata;
     if (enddata - s.c_str() == s.size()) { // If no size or offset override
