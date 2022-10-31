@@ -16,6 +16,8 @@
 #include "address.hh"
 #include "translate.hh"
 
+using namespace std;
+
 ostream &operator<<(ostream &s,const SeqNum &sq)
 
 {

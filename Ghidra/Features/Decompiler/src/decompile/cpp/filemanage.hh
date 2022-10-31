@@ -24,7 +24,7 @@
 #include <sstream>
 #include <fstream>
 
-using namespace std;
+//using namespace std;
 
 class FileManage {
   vector<string> pathlist;	// List of paths to search for files

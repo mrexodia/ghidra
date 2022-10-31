@@ -15,6 +15,8 @@
  */
 #include "translate.hh"
 
+using namespace std;
+
 /// Read a \<truncate_space> XML tag to configure \b this object
 /// \param el is the XML element
 void TruncationTag::restoreXml(const Element *el)

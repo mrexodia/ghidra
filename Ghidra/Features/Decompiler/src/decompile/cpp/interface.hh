@@ -27,7 +27,7 @@
 #include <sstream>
 #include <cstdio>
 
-using namespace std;
+//using namespace std;
 
 #ifdef __REMOTE_SOCKET__
 

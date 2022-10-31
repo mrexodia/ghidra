@@ -101,7 +101,7 @@ private:
   uintb pointerUpperBound;	///< Offset above which we don't search for pointers
   char shortcut;		///< Shortcut character for printing
 protected:
-  string name;			///< Name of this space
+  std::string name;			///< Name of this space
   uint4 addressSize;		///< Size of an address into this space in bytes
   uint4 wordsize;		///< Size of unit being addressed (1=byte)
   int4 minimumPointerSize;	///< Smallest size of a pointer into \b this space (in bytes)
@@ -111,13 +111,13 @@ protected:
   void calcScaleMask(void);	///< Calculate scale and mask
   void setFlags(uint4 fl);	///< Set a cached attribute
   void clearFlags(uint4 fl);	///< Clear a cached attribute
-  void saveBasicAttributes(ostream &s) const; ///< Write the XML attributes of this space
+  void saveBasicAttributes(std::ostream &s) const; ///< Write the XML attributes of this space
   void truncateSpace(uint4 newsize);
 public:
-  AddrSpace(AddrSpaceManager *m,const Translate *t,spacetype tp,const string &nm,uint4 size,uint4 ws,int4 ind,uint4 fl,int4 dl);
+  AddrSpace(AddrSpaceManager *m,const Translate *t,spacetype tp,const std::string &nm,uint4 size,uint4 ws,int4 ind,uint4 fl,int4 dl);
   AddrSpace(AddrSpaceManager *m,const Translate *t,spacetype tp); ///< For use with restoreXml
   virtual ~AddrSpace(void) {}	///< The address space destructor
-  const string &getName(void) const; ///< Get the name
+  const std::string &getName(void) const; ///< Get the name
   AddrSpaceManager *getManager(void) const; ///< Get the space manager
   const Translate *getTrans(void) const; ///< Get the processor translator
   spacetype getType(void) const; ///< Get the type of space
@@ -142,19 +142,19 @@ public:
   bool isOtherSpace(void) const;	///< Return \b true if \b this is the \e other address space
   bool isTruncated(void) const; ///< Return \b true if this space is truncated from its original size
   bool hasNearPointers(void) const;	///< Return \b true if \e near (truncated) pointers into \b this space are possible
-  void printOffset(ostream &s,uintb offset) const;  ///< Write an address offset to a stream
+  void printOffset(std::ostream &s,uintb offset) const;  ///< Write an address offset to a stream
 
   virtual int4 numSpacebase(void) const;	///< Number of base registers associated with this space
   virtual const VarnodeData &getSpacebase(int4 i) const;	///< Get a base register that creates this virtual space
   virtual const VarnodeData &getSpacebaseFull(int4 i) const;	///< Return original spacebase register before truncation
   virtual bool stackGrowsNegative(void) const;		///< Return \b true if a stack in this space grows negative
   virtual AddrSpace *getContain(void) const;  ///< Return this space's containing space (if any)
-  virtual void saveXmlAttributes(ostream &s,uintb offset) const;  ///< Save an address as XML
-  virtual void saveXmlAttributes(ostream &s,uintb offset,int4 size) const;   ///< Save an address and size as XML
+  virtual void saveXmlAttributes(std::ostream &s,uintb offset) const;  ///< Save an address as XML
+  virtual void saveXmlAttributes(std::ostream &s,uintb offset,int4 size) const;   ///< Save an address and size as XML
   virtual uintb restoreXmlAttributes(const Element *el,uint4 &size) const;   ///< Recover an offset and size
-  virtual void printRaw(ostream &s,uintb offset) const;  ///< Write an address in this space to a stream
-  virtual uintb read(const string &s,int4 &size) const;  ///< Read in an address (and possible size) from a string
-  virtual void saveXml(ostream &s) const; ///< Write the details of this space as XML
+  virtual void printRaw(std::ostream &s,uintb offset) const;  ///< Write an address in this space to a stream
+  virtual uintb read(const std::string &s,int4 &size) const;  ///< Read in an address (and possible size) from a string
+  virtual void saveXml(std::ostream &s) const; ///< Write the details of this space as XML
   virtual void restoreXml(const Element *el); ///< Recover the details of this space from XML
 
   static uintb addressToByte(uintb val,uint4 ws); ///< Scale from addressable units to byte units
@@ -178,19 +178,19 @@ public:
 /// by the offset field of an Address.
 class ConstantSpace : public AddrSpace {
 public:
-  ConstantSpace(AddrSpaceManager *m,const Translate *t,const string &nm,int4 ind); ///< Only constructor
-  virtual void printRaw(ostream &s,uintb offset) const;
-  virtual void saveXml(ostream &s) const;
+  ConstantSpace(AddrSpaceManager *m,const Translate *t,const std::string &nm,int4 ind); ///< Only constructor
+  virtual void printRaw(std::ostream &s,uintb offset) const;
+  virtual void saveXml(std::ostream &s) const;
   virtual void restoreXml(const Element *el);
 };
 
 /// \brief Special AddrSpace for special/user-defined address spaces
 class OtherSpace : public AddrSpace {
 public:
-  OtherSpace(AddrSpaceManager *m, const Translate *t, const string &nm, int4 ind);	///< Constructor
+  OtherSpace(AddrSpaceManager *m, const Translate *t, const std::string &nm, int4 ind);	///< Constructor
   OtherSpace(AddrSpaceManager *m, const Translate *t);	///< For use with restoreXml
-  virtual void printRaw(ostream &s, uintb offset) const;
-  virtual void saveXml(ostream &s) const;
+  virtual void printRaw(std::ostream &s, uintb offset) const;
+  virtual void saveXml(std::ostream &s) const;
 };
 
 /// \brief The pool of temporary storage registers
@@ -204,9 +204,9 @@ public:
 /// \b unique.  
 class UniqueSpace : public AddrSpace {
 public:
-  UniqueSpace(AddrSpaceManager *m,const Translate *t,const string &nm,int4 ind,uint4 fl);	///< Constructor
+  UniqueSpace(AddrSpaceManager *m,const Translate *t,const std::string &nm,int4 ind,uint4 fl);	///< Constructor
   UniqueSpace(AddrSpaceManager *m,const Translate *t);	///< For use with restoreXml
-  virtual void saveXml(ostream &s) const;
+  virtual void saveXml(std::ostream &s) const;
 };
 
 /// \brief The pool of logically joined variables
@@ -219,13 +219,13 @@ public:
 /// have an absolute meaning, the database may vary what offset is assigned to what set of pieces.
 class JoinSpace : public AddrSpace {
 public:
-  JoinSpace(AddrSpaceManager *m,const Translate *t,const string &nm,int4 ind);
-  virtual void saveXmlAttributes(ostream &s,uintb offset) const;
-  virtual void saveXmlAttributes(ostream &s,uintb offset,int4 size) const;
+  JoinSpace(AddrSpaceManager *m,const Translate *t,const std::string &nm,int4 ind);
+  virtual void saveXmlAttributes(std::ostream &s,uintb offset) const;
+  virtual void saveXmlAttributes(std::ostream &s,uintb offset,int4 size) const;
   virtual uintb restoreXmlAttributes(const Element *el,uint4 &size) const;
-  virtual void printRaw(ostream &s,uintb offset) const;
-  virtual uintb read(const string &s,int4 &size) const;
-  virtual void saveXml(ostream &s) const;
+  virtual void printRaw(std::ostream &s,uintb offset) const;
+  virtual uintb read(const std::string &s,int4 &size) const;
+  virtual void saveXml(std::ostream &s) const;
   virtual void restoreXml(const Element *el);
 };
 
@@ -242,7 +242,7 @@ class OverlaySpace : public AddrSpace {
 public:
   OverlaySpace(AddrSpaceManager *m,const Translate *t);	///< Constructor
   AddrSpace *getBaseSpace(void) const;			///< Get the address space being overlayed
-  virtual void saveXml(ostream &s) const;
+  virtual void saveXml(std::ostream &s) const;
   virtual void restoreXml(const Element *el);
 };
 
@@ -261,7 +261,7 @@ inline void AddrSpace::clearFlags(uint4 fl) {
 /// Every address space has a (unique) name, which is referred
 /// to especially in configuration files via XML.
 /// \return the name of this space
-inline const string &AddrSpace::getName(void) const {
+inline const std::string &AddrSpace::getName(void) const {
   return name;
 }
 

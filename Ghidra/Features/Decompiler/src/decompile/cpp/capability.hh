@@ -22,7 +22,7 @@
 #include <vector>
 #include <string>
 
-using namespace std;
+//using namespace std;
 
 /// \brief Class for automatically registering extension points to the decompiler
 ///

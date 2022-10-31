@@ -18,6 +18,8 @@
 
 #include <climits>
 
+using namespace std;
+
 /// Calculate \e highest based on \e addressSize, and \e wordsize.
 /// This also calculates the default pointerLowerBound
 void AddrSpace::calcScaleMask(void)
