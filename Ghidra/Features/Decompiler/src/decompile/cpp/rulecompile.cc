@@ -892,6 +892,8 @@ Here is the original flex parser
 %{
 #include "rulecompile.hh"
 #include "ruleparse.hh"
+
+using namespace std;
 #define ruleparsewrap() 1
 #define YY_SKIP_YYWRAP
 

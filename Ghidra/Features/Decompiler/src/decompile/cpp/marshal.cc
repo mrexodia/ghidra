@@ -16,6 +16,8 @@
 #include "marshal.hh"
 #include "translate.hh"
 
+using namespace std;
+
 using namespace PackedFormat;
 
 unordered_map<string,uint4> AttributeId::lookupAttributeId;

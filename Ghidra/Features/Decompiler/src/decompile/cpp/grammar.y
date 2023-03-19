@@ -16,6 +16,8 @@
 %{
 #include "grammar.hh"
 
+using namespace std;
+
 extern int yylex(void);
 extern int yyerror(const char *str);
 static CParse *parse;

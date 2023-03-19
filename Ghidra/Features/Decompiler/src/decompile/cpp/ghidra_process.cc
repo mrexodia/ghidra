@@ -23,9 +23,12 @@
 #endif
 
 #ifdef __REMOTE_SOCKET__
-
 #include "ifacedecomp.hh"
+#endif
 
+using namespace std;
+
+#ifdef __REMOTE_SOCKET__
 
 static IfaceStatus *ghidra_dcp = (IfaceStatus *)0;
 static RemoteSocket *remote = (RemoteSocket *)0;

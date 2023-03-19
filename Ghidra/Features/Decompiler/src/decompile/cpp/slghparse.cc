@@ -110,6 +110,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "slghparse.hh".  */
+
+using namespace std;
 #ifndef YY_YY_SLGHPARSE_HH_INCLUDED
 # define YY_YY_SLGHPARSE_HH_INCLUDED
 /* Debug traces.  */
