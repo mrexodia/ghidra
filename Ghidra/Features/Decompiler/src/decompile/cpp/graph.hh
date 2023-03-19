@@ -20,8 +20,8 @@
 
 #include "funcdata.hh"
 
-extern void dump_dataflow_graph(Funcdata &data,ostream &s);
-extern void dump_controlflow_graph(const string &name,const BlockGraph &graph,ostream &s);
-extern void dump_dom_graph(const string &name,const BlockGraph &graph,ostream &s);
+extern void dump_dataflow_graph(Funcdata &data,std::ostream &s);
+extern void dump_controlflow_graph(const std::string &name,const BlockGraph &graph,std::ostream &s);
+extern void dump_dom_graph(const std::string &name,const BlockGraph &graph,std::ostream &s);
 
 #endif
