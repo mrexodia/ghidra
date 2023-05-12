@@ -20,6 +20,7 @@
 
 #include "address.hh"
 #include "opbehavior.hh"
+#include <array>
 
 /// \brief Data defining a specific memory location
 ///
@@ -106,7 +107,8 @@ class PcodeOpRaw {
   OpBehavior *behave;		///< The opcode for this operation
   SeqNum seq;	                ///< Identifying address and index of this operation
   VarnodeData *out;		///< Output varnode triple
-  std::vector<VarnodeData *> in;	///< Raw varnode inputs to this op
+  std::array<VarnodeData*, 3> in;  ///< Raw varnode inputs to this op
+  int4 insz = 0;
 public:
   void setBehavior(OpBehavior *be); ///< Set the opcode for this op
   OpBehavior *getBehavior(void) const; ///< Retrieve the behavior for this op
@@ -205,7 +207,8 @@ inline VarnodeData *PcodeOpRaw::getOutput(void) const
 inline void PcodeOpRaw::addInput(VarnodeData *i)
 
 {
-  in.push_back(i);
+  if (insz >= in.size())__debugbreak(); // oh nein
+  in[insz++] = i;
 }
 
 /// If the inputs to a pcode operation need to be changed, this routine clears the existing
@@ -213,14 +216,14 @@ inline void PcodeOpRaw::addInput(VarnodeData *i)
 inline void PcodeOpRaw::clearInputs(void)
 
 {
-  in.clear();
+  insz =0;
 }
 
 /// \return the number of inputs
 inline int4 PcodeOpRaw::numInput(void) const
 
 {
-  return in.size();
+  return insz;
 }
 
 /// Input varnodes are indexed starting at 0.  This retrieves the input varnode by index.

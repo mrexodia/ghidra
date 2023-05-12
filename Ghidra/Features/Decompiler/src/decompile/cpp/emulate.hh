@@ -272,17 +272,20 @@ inline MemoryState *EmulateMemory::getMemoryState(void) const
   return memstate;
 }
 
+template<class T>
+using SmartCacheContainer = std::vector<T>;
+
 /// \brief P-code emitter that dumps its raw Varnodes and PcodeOps to an in memory cache
 ///
 /// This is used for emulation when full Varnode and PcodeOp objects aren't needed
 class PcodeEmitCache : public PcodeEmit {
-  std::vector<PcodeOpRaw *> &opcache;	///< The cache of current p-code ops
-  std::vector<VarnodeData *> &varcache;	///< The cache of current varnodes
+  SmartCacheContainer<PcodeOpRaw> &opcache;	///< The cache of current p-code ops
+  SmartCacheContainer<VarnodeData> &varcache;	///< The cache of current varnodes
   const std::vector<OpBehavior *> &inst;	///< Array of behaviors for translating OpCode
   uintm uniq;				///< Starting offset for defining temporaries in \e unique space
   VarnodeData *createVarnode(const VarnodeData *var);	///< Clone and cache a raw VarnodeData
 public:
-  PcodeEmitCache(std::vector<PcodeOpRaw *> &ocache,std::vector<VarnodeData *> &vcache,
+  PcodeEmitCache(SmartCacheContainer<PcodeOpRaw> &ocache, SmartCacheContainer<VarnodeData> &vcache,
 		 const std::vector<OpBehavior *> &in,uintb uniqReserve);	///< Constructor
   virtual void dump(const Address &addr,OpCode opc,VarnodeData *outvar,VarnodeData *vars,int4 isize);
 };
@@ -295,8 +298,8 @@ public:
 /// are additional methods for inspecting the pcode ops in the current instruction as a sequence.
 class EmulatePcodeCache : public EmulateMemory {
   Translate *trans;		///< The SLEIGH translator
-  std::vector<PcodeOpRaw *> opcache;	///< The cache of current p-code ops
-  std::vector<VarnodeData *> varcache;	///< The cache of current varnodes
+  SmartCacheContainer<PcodeOpRaw> opcache;	///< The cache of current p-code ops
+  SmartCacheContainer<VarnodeData> varcache;	///< The cache of current varnodes
   std::vector<OpBehavior *> inst;	///< Map from OpCode to OpBehavior
   BreakTable *breaktable;	///< The table of breakpoints
   Address current_address;	///< Address of current instruction being executed
@@ -357,7 +360,7 @@ inline int4 EmulatePcodeCache::getCurrentOpIndex(void) const
 inline PcodeOpRaw *EmulatePcodeCache::getOpByIndex(int4 i) const
 
 {
-  return opcache[i];
+  return (PcodeOpRaw*)&opcache[i];
 }
 
 /// \return the currently executing machine address
